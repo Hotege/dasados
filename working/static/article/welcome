@@ -1,0 +1,22 @@
+[
+    {
+        "Type": "t",
+        "Value": "Welcome to BlogKit!"
+    },
+    {
+        "Type": "i",
+        "Value": "static/patches/blogkit.png"
+    },
+    {
+        "Type": "c",
+        "Value": "python\nprint('======== ========')\nprint('Hello World!')\nprint('======== ========')"
+    },
+    {
+        "Type": "f",
+        "Value": "static/patches/blogkit.zip"
+    },
+    {
+        "Type": "t",
+        "Value": "You can delete this article via admin area.\nVisit URL for more information."
+    }
+]
