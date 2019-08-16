@@ -32,7 +32,7 @@ body {
     min-width: 360px;
     /*height: 100%;
     margin: 48px auto 4px auto;*/
-    height: 48px;
     margin: 48px auto;
     box-sizing: border-box;
+    padding: 8px;
 }

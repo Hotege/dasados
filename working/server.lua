@@ -65,35 +65,47 @@ end
 
 local handlers = {}
 
-local function getStaticFile(conn, t)
-    local filename = t["filedir"] .. "/" .. string.sub(t["dir"], 7, #t["dir"])
+local function loadFile(filename)
     local file = io.open(filename, "rb")
     local len = file:seek("end")
     file:seek("set")
     local data = file:read(len)
+    io.close(file)
+    return len, data
+end
+
+local function getStaticFile(conn, t)
+    local filename = t["filedir"] .. "/" .. string.sub(t["dir"], 7, #t["dir"])
+    local len, data = loadFile(filename)
     local header = "HTTP/1.1 200 OK\r\nContent-Length: " .. len .. "\r\n\r\n"
     sendBuffer(conn, header, #header)
     sendBuffer(conn, data, len)
-    io.close(file)
 end
 
 handlers["/favicon.ico"] = function(conn, t, template)
     local filename = t["filedir"] .. "/" .. "favicon.ico"
-    local file = io.open(filename, "rb")
-    local len = file:seek("end")
-    file:seek("set")
-    local data = file:read(len)
+    local len, data = loadFile(filename)
     local header = "HTTP/1.1 200 OK\r\nContent-Length: " .. len .. "\r\nContent-Type: image/x-icon\r\n\r\n"
     sendBuffer(conn, header, #header)
     sendBuffer(conn, data, len)
-    io.close(file)
 end
 
 handlers["/"] = function(conn, t, template)
     if (type(t["params"]["id"]) == "nil") then
         t["params"]["id"] = "0"
     end
+    local header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
     local modules = getSelectAll("module")
+    if (type(modules[t["params"]["id"]]) == "nil") then
+        local l, errorPage = loadFile(t["filedir"] .. "/" .. "templates/error.html")
+        local pattern = "{{(%s*).error(%s*)}}"
+        local html = string.gsub(errorPage, pattern, function(p)
+            return "Cannot find module."
+        end)
+        local response = header .. html
+        sendBuffer(conn, response, #response)
+        return
+    end
     local articles = getSelectAll("article")
     local data = {}
     data["renderType"] = "module"
@@ -105,7 +117,6 @@ handlers["/"] = function(conn, t, template)
     local html = string.gsub(template, pattern, function(p)
         return encodeBase64(dataString)
     end)
-    local header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
     local response = header .. html
     sendBuffer(conn, response, #response)
 end
@@ -114,6 +125,7 @@ handlers["/module"] = function(conn, t, template)
     if (t["params"]["id"] == "0") then
         response = "HTTP/1.1 302 Found\r\nLocation: /\r\n\r\n"
         sendBuffer(conn, response, #response)
+        return
     end
     handlers["/"](conn, t, template)
 end
@@ -125,12 +137,8 @@ handlers["/article"] = function(conn, t, template)
     data["renderType"] = "article"
     data["modules"] = modules
     data["articles"] = articles
-    local file = io.open(t["filedir"] .. "/" .. articles[t["params"]["id"]]["path"], "rb")
-    local len = file:seek("end")
-    file:seek("set")
-    local readData = file:read(len)
+    local len, readData = loadFile(t["filedir"] .. "/" .. articles[t["params"]["id"]]["path"])
     data["articleData"] = encodeBase64(readData)
-    io.close(file)
     local dataString = table2json(data)
     local pattern = "{{(%s*).data(%s*)}}"
     local html = string.gsub(template, pattern, function(p)
@@ -145,10 +153,17 @@ function resolveDirectory(conn, t)
     if (string.sub(t["dir"], 1, 6) == "/file/" and #t["dir"] > 6) then
         getStaticFile(conn, t);
     end
-    local file = io.open(t["filedir"] .. "/" .. "templates/template.html", "rb")
-    local len = file:seek("end")
-    file:seek("set")
-    local template = file:read(len)
-    io.close(file)
-    handlers[t["dir"]](conn, t, template)
+    if (type(handlers[t["dir"]]) ~= "nil") then
+        local len, template = loadFile(t["filedir"] .. "/" .. "templates/template.html")
+        handlers[t["dir"]](conn, t, template)
+    else
+        local l, errorPage = loadFile(t["filedir"] .. "/" .. "templates/error.html")
+        local pattern = "{{(%s*).error(%s*)}}"
+        local html = string.gsub(errorPage, pattern, function(p)
+            return "Cannot find page " .. t["dir"] .. "."
+        end)
+        local header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
+        local response = header .. html
+        sendBuffer(conn, response, #response)
+    end
 end

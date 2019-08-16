@@ -4,9 +4,9 @@ function utf8to16(str) {
     out = "";
     len = str.length;
     i = 0;
-    while(i < len) {
+    while (i < len) {
         c = str.charCodeAt(i++);
-        switch(c >> 4) {
+        switch (c >> 4) {
         case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
             out += str.charAt(i-1);
             break;
@@ -31,12 +31,18 @@ window.onload = function() {
     var code = utf8to16(window.atob(data));
     var obj = JSON.parse(code);
 
+    var board = document.getElementById('board');
+
     if (obj.renderType == 'module') {
         console.log(obj);
 
-/*        var d = document.createElement('div');
-        d.innerHTML = code;
-        document.body.appendChild(d);*/
+        if (typeof(obj.modules[obj.renderId]) != "undefined") {
+            var divHome = document.createElement('div');
+            divHome.innerHTML = obj.modules[obj.renderId].name;
+            board.appendChild(divHome);
+            var splitBar = document.createElement('hr');
+            board.appendChild(splitBar);
+        }
     }
     if (obj.renderType == "article") {
         var articleCode = utf8to16(window.atob(obj.articleData));
@@ -44,9 +50,5 @@ window.onload = function() {
 
         console.log(obj);
         console.log(articleObj);
-
-/*        var d = document.createElement('div');
-        d.innerHTML = articleCode;
-        document.body.appendChild(d);*/
     }
 }
