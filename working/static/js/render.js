@@ -34,9 +34,9 @@ window.onload = function() {
     if (obj.renderType == 'module') {
         console.log(obj);
 
-        var d = document.createElement('div');
+/*        var d = document.createElement('div');
         d.innerHTML = code;
-        document.body.appendChild(d);
+        document.body.appendChild(d);*/
     }
     if (obj.renderType == "article") {
         var articleCode = utf8to16(window.atob(obj.articleData));
@@ -45,8 +45,8 @@ window.onload = function() {
         console.log(obj);
         console.log(articleObj);
 
-        var d = document.createElement('div');
+/*        var d = document.createElement('div');
         d.innerHTML = articleCode;
-        document.body.appendChild(d);
+        document.body.appendChild(d);*/
     }
 }

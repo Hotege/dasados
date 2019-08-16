@@ -1,0 +1,38 @@
+@font-face {
+    font-family: DejaVuSansMono;
+    src: url("../fonts/DejaVuSansMono.ttf")
+}
+
+@font-face {
+    font-family: DejaVuSansMonoBold;
+    src: url("../fonts/DejaVuSansMono-Bold.ttf")
+}
+
+body {
+    font-family: DejaVuSansMono;
+    background-color: lightyellow;
+    margin: 0;
+}
+
+.nav-bar {
+    position: fixed;
+    z-index: 1000;
+    display: flex;
+    background-color: lightpink;
+    left: 0;
+    right: 0;
+    top: 0;
+    min-height: 48px;
+}
+
+.place-board {
+    background-color: lightgreen;
+    border: 1px solid black;
+    width: 50%;
+    min-width: 360px;
+    /*height: 100%;
+    margin: 48px auto 4px auto;*/
+    height: 48px;
+    margin: 48px auto;
+    box-sizing: border-box;
+}

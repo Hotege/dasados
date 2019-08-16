@@ -1,22 +1,13 @@
 <html>
 <head>
+    <link rel='stylesheet' href='file/css/template.css' type='text/css' />
     <script src='file/js/render.js'></script>
-    <style>
-        @font-face {
-            font-family: DejaVuSansMono;
-            src: url("../file/fonts/DejaVuSansMono.ttf")
-        }
-        @font-face {
-            font-family: DejaVuSansMonoBold;
-            src: url("../file/fonts/DejaVuSansMono-Bold.ttf")
-        }
-        body {
-            font-family: DejaVuSansMono;
-            background-color: lightyellow;
-        }
-    </style>
 </head>
 <body>
-    <render id='render' data='{{ .data }}' />
+    <render id='render' data='{{ .data }}'></render>
+    <div style='position: fixed; z-index: 1000; display: flex; background-color: lightpink; left: 0; right: 0; top: 0; min-height: 48px;'>
+    </div>
+    <div class='place-board'>
+    </div>
 </body>
 </html>
